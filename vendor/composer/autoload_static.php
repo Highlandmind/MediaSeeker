@@ -50,11 +50,22 @@ class ComposerStaticInitf4f05e15cc0318ec7a0ee6e4ffb7fa9a
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'o' => 
+        array (
+            'org\\bovigo\\vfs\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/mikey179/vfsStream/src/main/php',
+            ),
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitf4f05e15cc0318ec7a0ee6e4ffb7fa9a::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitf4f05e15cc0318ec7a0ee6e4ffb7fa9a::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitf4f05e15cc0318ec7a0ee6e4ffb7fa9a::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

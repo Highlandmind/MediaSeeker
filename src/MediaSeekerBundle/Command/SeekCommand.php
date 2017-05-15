@@ -8,6 +8,7 @@
 
 namespace MediaSeeker\Command;
 
+use MediaSeeker\MediaSeeker;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -67,7 +68,10 @@ class SeekCommand extends Command
             $paths = [$this->baseDir];
         }
 
-        $files = $this->findFiles($paths, $this->getExtensions($input));
+        $fileSystem = new FileSystem();
+        $seeker = new MediaSeeker($fileSystem);
+
+        $files = $seeker->findFiles($paths, $this->getExtensions($input));
 
         foreach ($files as $file) {
             var_dump($file);
@@ -97,17 +101,5 @@ class SeekCommand extends Command
         $extensions = array_merge($extensions, $input->getOption('ext'));
 
         return array_unique($extensions);
-    }
-
-    private function findFiles(array $paths, array $extensions): array
-    {
-        $fileSystem = new FileSystem();
-
-        $files = [];
-        foreach ($paths as $path) {
-            $files = array_merge($files, $fileSystem->findFilesInPath(realpath($path), $extensions));
-        }
-
-        return array_unique($files);
     }
 }

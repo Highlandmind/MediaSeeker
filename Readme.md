@@ -8,3 +8,8 @@
     
 - Generowanie nowych ścieżek w których zostaną umieszczone pliki
     - Zapis plików w nowych lokalizacjach pod nowymi nazwami
+    
+Liczeniem ścieżek powinna się zajmować odpowiednia klasa (dla której zostaną zarejestrowane typy oraz metody
+ich przetwarzania)
+
+Modele obrazów powinny znajdować się w jednym miejscu
