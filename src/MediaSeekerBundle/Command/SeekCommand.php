@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Zonk
- * Date: 14.05.2017
- * Time: 11:34
- */
 
 namespace MediaSeeker\Command;
 
@@ -72,22 +66,19 @@ class SeekCommand extends Command
         $fileSystem = new FileSystem();
         $seeker = new MediaSeeker($fileSystem);
 
-        $files = $seeker->findFiles($paths, $this->getExtensions($input));
-
-        $test = [];
-
-        /** @var Media $media */
-        foreach ($seeker->collectMedia($paths, $this->getExtensions($input)) as $media) {
-            $test[] = $media->getName();
-        }
-
-        var_dump($test);
+        $files = $seeker->collectMedia($paths, $this->getExtensions($input));
 
         $filesNumber = count($files);
 
         $output->writeln([
             "{$filesNumber} files found"
         ]);
+
+        $output->writeln([
+            "Organizing files..."
+        ]);
+
+        $seeker->organize($files);
 
         $output->writeln(['Done']);
     }

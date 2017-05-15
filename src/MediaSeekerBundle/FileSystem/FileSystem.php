@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Zonk
- * Date: 14.05.2017
- * Time: 15:24
- */
 
 namespace MediaSeeker\FileSystem;
 
@@ -36,5 +30,15 @@ class FileSystem
         }
 
         return $files;
+    }
+
+    public function copy(string $source, string $destination) {
+        $dir = pathinfo($destination, PATHINFO_DIRNAME);
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        copy($source, $destination);
     }
 }

@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 236
- * Date: 2017-05-15
- * Time: 09:44
- */
 
 namespace MediaSeekerTest;
-
 
 use MediaSeeker\FileSystem\FileSystem;
 use MediaSeeker\MediaSeeker;
