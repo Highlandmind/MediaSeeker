@@ -9,6 +9,7 @@
 namespace MediaSeeker\Command;
 
 use MediaSeeker\MediaSeeker;
+use MediaSeeker\Models\Media;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,12 +74,14 @@ class SeekCommand extends Command
 
         $files = $seeker->findFiles($paths, $this->getExtensions($input));
 
-        foreach ($files as $file) {
-            var_dump($file);
-            if (exif_imagetype($file) === IMAGETYPE_JPEG) {
-                var_dump(exif_read_data($file));
-            }
+        $test = [];
+
+        /** @var Media $media */
+        foreach ($seeker->collectMedia($paths, $this->getExtensions($input)) as $media) {
+            $test[] = $media->getName();
         }
+
+        var_dump($test);
 
         $filesNumber = count($files);
 
