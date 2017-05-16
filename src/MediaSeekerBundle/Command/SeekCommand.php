@@ -2,8 +2,11 @@
 
 namespace MediaSeeker\Command;
 
+use MediaSeeker\ImageStore;
 use MediaSeeker\MediaSeeker;
+use MediaSeeker\MediaStore;
 use MediaSeeker\Models\Media;
+use MediaSeeker\VideoStore;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,6 +44,12 @@ class SeekCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'The list of files extensions to filter separated by comma ","'
             )
+            ->addOption(
+                'out',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Output path for files'
+            )
             ->addArgument(
                 'paths',
                 InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
@@ -63,22 +72,15 @@ class SeekCommand extends Command
             $paths = [$this->baseDir];
         }
 
-        $fileSystem = new FileSystem();
-        $seeker = new MediaSeeker($fileSystem);
+        $destination = 'd:\\test-photos\\';
 
-        $files = $seeker->collectMedia($paths, $this->getExtensions($input));
-
-        $filesNumber = count($files);
-
-        $output->writeln([
-            "{$filesNumber} files found"
-        ]);
+        $seeker = $this->initializeSeeker($destination);
 
         $output->writeln([
             "Organizing files..."
         ]);
 
-        $seeker->organize($files);
+        $seeker->organize($paths, $this->getExtensions($input));
 
         $output->writeln(['Done']);
     }
@@ -95,5 +97,17 @@ class SeekCommand extends Command
         $extensions = array_merge($extensions, $input->getOption('ext'));
 
         return array_unique($extensions);
+    }
+
+    private function initializeSeeker(string $destinationPath): MediaSeeker
+    {
+        $fileSystem = new FileSystem();
+
+        $photoStore = new ImageStore($fileSystem, $destinationPath);
+        $videoStore = new VideoStore($fileSystem, $destinationPath);
+        $store = new MediaStore();
+        $store->registerStore('PHOTO', $photoStore)->registerStore('VIDEO', $videoStore);
+
+        return new MediaSeeker($fileSystem, $store);
     }
 }

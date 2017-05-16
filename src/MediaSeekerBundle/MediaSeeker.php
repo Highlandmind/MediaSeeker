@@ -2,16 +2,20 @@
 
 namespace MediaSeeker;
 
-use MediaSeeker\FileSystem\FileSystem;
+use MediaSeeker\FileSystem\FileSystemInterface;
 use MediaSeeker\Models\Media;
 
 class MediaSeeker
 {
+    /** @var FileSystemInterface */
     protected $fileSystem;
+    /** @var  MediaStore */
+    protected $store;
 
-    public function __construct(FileSystem $fileSystem)
+    public function __construct(FileSystemInterface $fileSystem, MediaStore $store)
     {
         $this->fileSystem = $fileSystem;
+        $this->store = $store;
     }
 
     /**
@@ -19,7 +23,8 @@ class MediaSeeker
      * @param array $extensions
      * @return array|Media[]
      */
-    public function collectMedia(array $paths, array $extensions): array {
+    public function collectMedia(array $paths, array $extensions): array
+    {
         $files = $this->findFiles($paths, $extensions);
 
         $result = [];
@@ -43,7 +48,8 @@ class MediaSeeker
                     continue;
                 }
 
-                do  {
+                do {
+                    // TODO in extreme cases this may be infinite, try to fix this
                     $file->generateNewName();
                 } while (isset($helper[$file->getName()]));
             }
@@ -55,25 +61,23 @@ class MediaSeeker
         return $resultMedia;
     }
 
-    public function organize(array $files)
+    public function organize(array $paths, array $extensions): self
     {
-        $photoStore = new ImageStore($this->fileSystem, 'd:\\test-photos\\');
+        $files = $this->collectMedia($paths, $extensions);
 
         /** @var Media $file */
         foreach ($files as $file) {
-            if ($file->isPhoto()) {
-                $photoStore->store($file);
-            } else if ($file->isVideo()) {
-                // use video storage
-            }
+            $this->store->store($file);
         }
+
+        return $this;
     }
 
     public function findFiles(array $paths, array $extensions): array
     {
         $files = [];
         foreach ($paths as $path) {
-            $files = array_merge($files, $this->fileSystem->findFilesInPath(realpath($path), $extensions));
+            $files = array_merge($files, $this->fileSystem->findFilesInPath($path, $extensions));
         }
 
         return array_unique($files);
@@ -83,7 +87,7 @@ class MediaSeeker
     {
         $dates = [filemtime($file)];
 
-        if (exif_imagetype($file) === IMAGETYPE_JPEG) {
+        if (@exif_imagetype($file) === IMAGETYPE_JPEG) {
             $exifData = exif_read_data($file);
 
             if (isset($exifData['DateTime'])) {

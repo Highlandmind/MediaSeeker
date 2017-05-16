@@ -65,16 +65,26 @@ class Media
     public function __construct(string $source, int $timestamp, int $size)
     {
         $this->nameIterator = 0;
-        $this->name = pathinfo($source, PATHINFO_FILENAME);
         $this->extension = pathinfo($source, PATHINFO_EXTENSION);
         $this->source = $source;
-        $this->timestamp = $timestamp;
         $this->size = $size;
+        $this->setTimestamp($timestamp);
     }
 
     public function getSize(): int
     {
         return $this->size;
+    }
+
+    public function getType(): string
+    {
+        if ($this->isPhoto()) {
+            return 'PHOTO';
+        } else if ($this->isVideo()) {
+            return 'VIDEO';
+        } else {
+            return 'UNKNOWN';
+        }
     }
 
     public function getSource(): string
@@ -108,8 +118,8 @@ class Media
         return in_array($this->extension, self::VIDEOS, true);
     }
 
-    private function setExtension(string $extension)
-    {
-        $this->extension = $extension;
+    private function setTimestamp(int $timestamp): void {
+        $this->timestamp = $timestamp;
+        $this->name = date('YmdHis', $timestamp);
     }
 }

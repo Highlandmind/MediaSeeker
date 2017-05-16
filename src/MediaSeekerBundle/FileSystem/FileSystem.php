@@ -3,9 +3,14 @@
 namespace MediaSeeker\FileSystem;
 
 
-class FileSystem
+class FileSystem implements FileSystemInterface
 {
-    public function findFilesInPath($path, array $extensions)
+    /**
+     * @param $path
+     * @param array $extensions
+     * @return array
+     */
+    public function findFilesInPath($path, array $extensions): array
     {
         $filter = new \RecursiveCallbackFilterIterator(
             new \RecursiveDirectoryIterator($path),
@@ -32,13 +37,19 @@ class FileSystem
         return $files;
     }
 
-    public function copy(string $source, string $destination) {
+    /**
+     * @param string $source
+     * @param string $destination
+     * @return bool
+     */
+    public function copy(string $source, string $destination): boolean
+    {
         $dir = pathinfo($destination, PATHINFO_DIRNAME);
 
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
 
-        copy($source, $destination);
+        return copy($source, $destination);
     }
 }

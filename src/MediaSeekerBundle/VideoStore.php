@@ -6,7 +6,7 @@ namespace MediaSeeker;
 use MediaSeeker\FileSystem\FileSystemInterface;
 use MediaSeeker\Models\Media;
 
-class ImageStore implements MediaStoreInterface
+class VideoStore implements MediaStoreInterface
 {
     use StoreTrait;
 
@@ -23,7 +23,8 @@ class ImageStore implements MediaStoreInterface
 
     public function store(Media $file)
     {
-        $finalPath = $this->generateDestinationPath($this->basePath, $file) . $file->getName();
+        $finalPath = $this->generateDestinationPath($this->basePath, $file)
+            . DIRECTORY_SEPARATOR . 'Filmy' . DIRECTORY_SEPARATOR . $file->getName();
         $this->fileSystem->copy($file->getSource(), $finalPath);
     }
 }
