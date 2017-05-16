@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 236
- * Date: 2017-05-15
- * Time: 09:38
- */
 
 namespace MediaSeeker;
 
@@ -59,6 +53,20 @@ class MediaSeeker
         }
 
         return $resultMedia;
+    }
+
+    public function organize(array $files)
+    {
+        $photoStore = new ImageStore($this->fileSystem, 'd:\\test-photos\\');
+
+        /** @var Media $file */
+        foreach ($files as $file) {
+            if ($file->isPhoto()) {
+                $photoStore->store($file);
+            } else if ($file->isVideo()) {
+                // use video storage
+            }
+        }
     }
 
     public function findFiles(array $paths, array $extensions): array
